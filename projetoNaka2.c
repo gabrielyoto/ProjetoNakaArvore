@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <locale.h>
 
 enum Balance {E,C,D};
 
@@ -10,8 +11,8 @@ struct tree
 {
     int chave;
     enum Balance bal;
-    struct no *esq;
-    struct no *dir;
+    struct tree *esq;
+    struct tree *dir;
 };
 
 typedef struct fila no_fila;
@@ -24,7 +25,7 @@ struct fila
 
 void insere(no **raiz, int n, int *h);
 void deleta(no **raiz, int n);
-int Menu(void);
+int menu(void);
 int media(no *raiz, int *med);
 void largura (no *raiz);
 int contagem (no *raiz);
@@ -38,99 +39,150 @@ int um_filho(no *raiz);
 int dois_filhos(no *raiz);
 void menor_valor(no *raiz);
 void maior_valor(no *raiz);
+int consulta( no* raiz, int n);
 
 int main ()
 {
+    setlocale(LC_ALL, "Portuguese");
     int choice, num, arvore, busca, folhas, same, med, cont_total, filhos;
     no *raiz = NULL;
     no *raiz2 = NULL;
     no* inicio;
     int h;
     printf("\n");
-    printf("Qual árvore você deseja acessar?\n\n1 = Árvore 1\n2 = Árvore 2");
-    scanf("%d", &arvore);
+    do
+    {
+        printf("Qual arvore voce deseja acessar?\n\n1 = Arvore 1\n2 = Arvore 2\n\n");
+        scanf("%d", &arvore);
+    } while (arvore != 1 && arvore != 2);
 
-   //MENU
+   //menu
     do
     {
         printf("\n");
-        choice = Menu();
+        choice = menu();
         switch(choice)
         {
            case 1:
                 do{
-                    printf("Digite o numero para insercao:");
+                    printf("Digite o numero para insercao: ");
                     scanf("%d",&num);
                     h = 0;
-                    insere(&raiz, num,&h);
                     if(arvore == 2)
-                    {
                         insere(&raiz2, num, &h);
-                    }
+                    else
+                        insere(&raiz, num, &h);
                 } while(num<0);
                 break;
            case 2:
                 printf("Digite o numero para remocao: ");
                 scanf("%d",&num);
-                deleta(&raiz, num);
                 if(arvore == 2)
-                {
                     deleta(&raiz2, num);
-                }
+                else
+                    deleta(&raiz, num);
                 break;
            case 3:
-                ordem(raiz);
                 if(arvore == 2)
-                {
                     ordem(raiz2);
+                else
+                    ordem(raiz);
+                break;
+            case 4:
+                pre_ordem(raiz);
+                if(arvore == 2)
+                {
+                    pre_ordem(raiz2);
                 }
                 break;
-           case 4:
-                printf("Percurso em largura: ");
-                if (raiz)
+            case 5:
+                pos_ordem(raiz);
+                if(arvore == 2)
+                {
+                    pos_ordem(raiz2);
+                }
+                break;
+           case 6:
+                if(arvore == 2)
+                    largura(raiz2);
+                else
                     largura(raiz);
-                if(arvore == 2)
-                {
-                    if (raiz2) largura(raiz2);
-                }
-                else
-                    printf("Arvore vazia!");
                 break;
-           case 5:
-                printf("Digite o numero para consulta:");
-                scanf("%d",&num);
-                if (consulta(raiz, num) == 1)
-                    printf("Numero encontrado\n");
-                else
-                    printf("Numero NAO encontrado\n");
+            case 7:
+                cont_total = contagem(raiz);
+                printf("\nNumero total de nos e de %d\n", cont_total);
                 if(arvore == 2)
                 {
-                    if (consulta(raiz2, num)==1)
-                        printf("Numero encontrado\n");
-                    else
-                        printf("Numero NAO encontrado\n");
+                    cont_total = contagem(raiz2);
+                    printf("\nNumero total de nos e de %d\n", cont_total);
+                }
+                break;
+            case 8:
+                folhas = cont_folhas(raiz);
+                printf("\nNumero de nos folhas e %d\n", folhas);
+                if(arvore == 2)
+                {
+                    folhas = cont_folhas(raiz2);
+                    printf("\nNumero de nos folhas e %d\n", folhas);
+                }
+                break;
+            case 9:
+                filhos=um_filho(raiz);
+                printf("Numero de nos com 1 filho %d\n", filhos);
+                if(arvore == 2)
+                {
+                    filhos=um_filho(raiz2);
+                    printf("Numero de nos com 1 filho %d\n", filhos);
                 }
                 break;
             case 10:
+                filhos = dois_filhos(raiz);
+                printf("Numero de nos com 2 filhos %d\n", filhos);
+                if(arvore == 2)
+                {
+                    filhos = dois_filhos(raiz2);
+                    printf("Numero de nos com 2 filhos %d\n", filhos);
+                }
+                break;
+            case 11:
+                //printf("Altura da arvore: %d", altura(raiz));
+                break;
+            case 12:
                 media(raiz, &med);
                 if(arvore == 2)
                 {
                     media(raiz2, &med);
                 }
-                printf("\nA média é %d\n", med);
+                printf("\nA media e %d\n", med);
                 break;
-            case 11:
-                cont_total = contagem(raiz);
-                printf("\nNúmero total de nós é de %d\n", cont_total);
+            case 13:
+                menor_valor(raiz);
                 if(arvore == 2)
                 {
-                    cont_total = contagem(raiz2);
-                    printf("\nNúmero total de nós é de %d\n", cont_total);
+                    menor_valor(raiz2);
                 }
                 break;
-            case 12:
+            case 14:
+                maior_valor(raiz);
+                if(arvore == 2)
+                {
+                    maior_valor(raiz2);
+                }
+                break;
+            case 15:
+                same = iguais(raiz, raiz2);
+                if(same = 1)
+                {
+                    printf("As Arvores sao iguais");
+                }
+                else
+                {
+                    printf("As Arvores sao diferentes");
+                }
+                break;
+            case 18:
                 printf("\nQual valor deseja buscar?\n");
-                scanf("%d", busca);
+                scanf("%d", &busca);
                 pertence(raiz, busca);
                 if(arvore == 2)
                 {
@@ -139,101 +191,39 @@ int main ()
                     pertence(raiz2, busca);
                 }
                 break;
-            case 13:
-                folhas = cont_folhas(raiz);
-                printf("\nNúmero de nós folhas é %d\n", folhas);
-                if(arvore == 2)
-                {
-                    folhas = cont_folhas(raiz2);
-                    printf("\nNúmero de nós folhas é %d\n", folhas);
-                }
+            default:
                 break;
-            case 14:
-                same = iguais(raiz, raiz2);
-                if(same = 1)
-                {
-                    printf("As Árvores são iguais");
-                }
-                else
-                {
-                    printf("As Árvores são diferentes");
-                }
-                break;
-            case 15:
-                pre_ordem(raiz);
-                if(arvore == 2)
-                {
-                    pre_ordem(raiz2);
-                }
-                break;
-            case 16:
-                pos_ordem(raiz);
-                if(arvore == 2)
-                {
-                    pos_ordem(raiz2);
-                }
-                break;
-            case 17:
-                filhos=um_filho(raiz);
-                printf("Número de nós com 1 filho %d\n", filhos);
-                if(arvore == 2)
-                {
-                    filhos=um_filho(raiz2);
-                    printf("Número de nós com 1 filho %d\n", filhos);
-                }
-                break;
-            case 18:
-                filhos=dois_filhos(raiz);
-                printf("Número de nós com 2 filhos %d\n", filhos);
-                if(arvore == 2)
-                {
-                    filhos=dois_filhos(raiz2);
-                    printf("Número de nós com 2 filhos %d\n", filhos);
-                }
-                break;
-            case 19:
-                menor_valor(raiz);
-                if(arvore == 2)
-                {
-                    menor_valor(raiz2);
-                }
-                break;
-            case 20:
-                maior_valor(raiz);
-                if(arvore == 2)
-                {
-                    maior_valor(raiz2);
-                }
-                break;
-            return 0;
           }
     } while (choice != 0);
 }
 
-int Menu(void)
+int menu(void)
 {
     int choice;
-    printf("\n\n OPCOES \n\n");
-    printf("1- Inserir\n");
-    printf("2- Remover\n");
-    printf("3- Percorrer em ordem\n");
-    printf("4- Percorrer em largura\n");
-    printf("5- Consulta\n");
-    printf("6- Similares\n");
-    printf("9- TESTE\n");
-    printf("10- Média\n");
-    printf("11- Contagem de Nós totais \n");
-    printf("12- Verificar se valor pertence a árvore\n");
-    printf("13- Contar nós folhas\n");
-    printf("14- Verificar se as duas árvores são iguais\n");
-    printf("15- Percorrer em pré ordem\n");
-    printf("16- Percorrer em pós ordem\n");
-    printf("17- Contar nós com 1 filho\n");
-    printf("18- Contar nós com 2 filhos\n");
-    printf("19- Verificar o Menor Valor na Árvore\n");
-    printf("20- Verificar o Maior Valor na Árvore\n");
+    printf("\n\nOPCOES\n\n");
+    printf("1 - Inserir\n");
+    printf("2 - Remover\n");
+    printf("3 - Percorrer em ordem\n");
+    printf("4 - Percorrer em pre ordem\n");
+    printf("5 - Percorrer em pos ordem\n");
+    printf("6 - Percorrer em largura\n");
+    printf("7 - Contagem de nos totais \n");
+    printf("8 - Contar nos folhas\n");
+    printf("9 - Contar nos com 1 filho\n");
+    printf("10 - Contar nos com 2 filhos\n");
+    printf("11 - Verificar altura\n");
+    printf("12 - Media dos valores\n");
+    printf("13 - Verificar o menor valor na arvore\n");
+    printf("14 - Verificar o maior valor na arvore\n");
+    printf("15 - Verificar se as duas arvores sao iguais\n");
+    printf("16 - Verificar se as duas arvores sao semelhantes\n");
+    printf("17 - Verificar se as duas arvores sao simetricas\n");
+    printf("18 - Verificar se valor pertence a alguma ou as duas arvores\n");
+    printf("19 - Verificar quais valores pertencem as duas arvores\n");
+    printf("20 - Verificar quais valores pertencem a pelo menos uma arvore\n");
     printf("0- Sair\n");
     scanf("%d", &choice);
+    system("cls");
     return(choice);
 }
 
@@ -424,11 +414,11 @@ void largura (no *raiz)
     enqueue (raiz, &fila);
     while (fila) {
         aux = dequeue(&fila);
-        printf("%d (%d)", aux->registro->chave, aux->registro->bal);
-        if (aux->registro->esq)
-            enqueue (aux->registro->esq, &fila);
-        if (aux->registro->dir)
-            enqueue (aux->registro->dir, &fila);
+        // printf("%d (%d)", aux->registro->chave, aux->registro->bal);
+        // if (aux->registro->esq)
+        //     enqueue (aux->registro->esq, &fila);
+        // if (aux->registro->dir)
+        //     enqueue (aux->registro->dir, &fila);
     }
     printf("\n");
 }
@@ -454,7 +444,7 @@ int media(no *raiz, int *med)
 {
     if(raiz == NULL)
     {
-        printf("\n\nÁrvore Vazia!\n");
+        printf("\n\nArvore Vazia!\n");
     }
     else if(raiz->dir == NULL)
     {
@@ -470,7 +460,7 @@ int media(no *raiz, int *med)
     return(media(raiz->dir, *med) + media(raiz->esq, *med));
 }
 
-// NUMERO DE NÓS
+// NUMERO DE NoS
 
 int contagem(no *raiz)
 {
@@ -481,18 +471,18 @@ int contagem(no *raiz)
     return(1 + contagem(raiz->esq) + contagem(raiz->dir));
 }
 
-// SE VALOR ESTÁ CONTIDO NA ÁRVORES
+// SE VALOR ESTA CONTIDO NA ARVORES
 
 void pertence(no *raiz, int busca)
 {
     if(raiz == NULL)
     {
-        printf("Valor não encontrado\n");
+        printf("Valor nao encontrado\n");
         return;
     }
     if(raiz->chave == busca)
     {
-        printf("Valor Pertence \n");
+        printf("Valor Pertence\n");
     }
     if(busca < raiz->chave)
     {
@@ -501,7 +491,7 @@ void pertence(no *raiz, int busca)
     return(pertence(raiz->dir, busca));
 }
 
-// NÚMERO DE FOLHAS
+// NuMERO DE FOLHAS
 
 int cont_folhas(no *raiz)
 {
@@ -516,7 +506,7 @@ int cont_folhas(no *raiz)
     return(cont_folhas(raiz->esq) + cont_folhas(raiz->dir));
 }
 
-// ÁRVORES IGUAIS
+// ARVORES IGUAIS
 
 int iguais (no* raiz, no *raiz2)
 {
@@ -541,13 +531,15 @@ void ordem(no *raiz)
 {
     if(raiz != NULL)
     {
-        ordem(raiz->esq);
+        if (raiz->esq != NULL)
+            ordem(raiz->esq);
         printf("%d\n", raiz->chave);
-        ordem(raiz->dir);
+        if (raiz->dir != NULL)
+            ordem(raiz->dir);
     }
     else
     {
-        printf("Árvore Vazia!\n");
+        printf("Arvore Vazia!\n");
     }
 }
 
@@ -563,11 +555,11 @@ void pre_ordem(no *raiz)
     }
     else
     {
-        printf("Árvore Vazia! \n");
+        printf("Arvore Vazia! \n");
     }
 }
 
-//PERCRUSO EM PÓS ORDEM
+//PERCRUSO EM PoS ORDEM
 
 void pos_ordem(no *raiz)
 {
@@ -579,11 +571,11 @@ void pos_ordem(no *raiz)
     }
     else
     {
-        printf("Árvore Vazia!\n");
+        printf("Arvore Vazia!\n");
     }
 }
 
-//NÓS COM 1 FILHO
+//NoS COM 1 FILHO
 
 int um_filho(no *raiz)
 {
@@ -603,7 +595,7 @@ int um_filho(no *raiz)
     um_filho(raiz->dir);
 }
 
-//NÓS COM 2 FILHOS
+//NoS COM 2 FILHOS
 
 int dois_filhos(no *raiz)
 {
@@ -622,7 +614,7 @@ int dois_filhos(no *raiz)
     return(1 + dois_filhos(raiz->esq) + dois_filhos(raiz->dir));
 }
 
-//MENOR VALOR NA ÁRVORE
+//MENOR VALOR NA ARVORE
 
 void menor_valor(no *raiz)
 {
@@ -641,10 +633,10 @@ void menor_valor(no *raiz)
         menor_valor(raiz->esq);
         menor_valor(raiz->dir);
     }
-    printf("O menor valor na árvore é: %d\n", menor);
+    printf("O menor valor na arvore e: %d\n", menor);
 }
 
-//MAIOR VALOR NA ÁRVORE
+//MAIOR VALOR NA ARVORE
 
 void maior_valor(no *raiz)
 {
@@ -658,5 +650,5 @@ void maior_valor(no *raiz)
         maior_valor(raiz->esq);
         maior_valor(raiz->dir);
     }
-    printf("O maior valor na árvore é: %d\n", maior);
+    printf("O maior valor na arvore e: %d\n", maior);
 }
