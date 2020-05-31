@@ -221,7 +221,7 @@ int menu(void)
     printf("18 - Verificar se valor pertence a alguma ou as duas arvores\n");
     printf("19 - Verificar quais valores pertencem as duas arvores\n");
     printf("20 - Verificar quais valores pertencem a pelo menos uma arvore\n");
-    printf("0- Sair\n");
+    printf("0 - Sair\n");
     scanf("%d", &choice);
     system("cls");
     return(choice);
@@ -348,19 +348,28 @@ void deleta(no **raiz, int n)
 {
     if (*raiz != NULL)
     {
+        if (!consulta(*raiz, n))
+        {
+            printf("Elemento nao encontrado");
+            return;
+        }
         if ((*raiz)->chave == n)
         {
             if ((*raiz)->esq == NULL)
-                (*raiz)=(*raiz)->dir;
+                (*raiz) = (*raiz)->dir;
             else if ((*raiz)->dir == NULL)
-                (*raiz)=((*raiz)->esq);
+                (*raiz) = ((*raiz)->esq);
             else
                 (*raiz)->chave = mydel(&(*raiz)->esq);
         }
         else if (n > (*raiz)->chave)
-            deleta((*raiz)->dir, n);
+            deleta(&(*raiz)->dir, n);
         else if (n < (*raiz)->chave)
-            deleta((*raiz)->esq, n);
+            deleta(&(*raiz)->esq, n);
+    }
+    else
+    {
+        printf("Arvore vazia");
     }
 }
 
@@ -426,7 +435,7 @@ void largura (no *raiz)
 
 /* CONSULTA */
 
-int consulta( no* raiz, int n)
+int consulta(no *raiz, int n)
 {
     if (raiz == NULL)
         return (0);
