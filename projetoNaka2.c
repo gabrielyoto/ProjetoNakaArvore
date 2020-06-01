@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <locale.h>
 
 enum Balance {E,C,D};
 
@@ -10,8 +11,8 @@ struct tree
 {
     int chave;
     enum Balance bal;
-    struct no *esq;
-    struct no *dir;
+    struct tree *esq;
+    struct tree *dir;
 };
 
 typedef struct fila no_fila;
@@ -24,7 +25,7 @@ struct fila
 
 void insere(no **raiz, int n, int *h);
 void deleta(no **raiz, int n);
-int Menu(void);
+int menu(void);
 int media(no *raiz, int *med);
 void largura (no *raiz);
 int contagem (no *raiz);
@@ -38,197 +39,191 @@ int um_filho(no *raiz);
 int dois_filhos(no *raiz);
 void menor_valor(no *raiz);
 void maior_valor(no *raiz);
+int consulta( no* raiz, int n);
 
 int main ()
 {
+    setlocale(LC_ALL, "Portuguese");
     int choice, num, arvore, busca, folhas, same, med, cont_total, filhos;
     no *raiz = NULL;
     no *raiz2 = NULL;
     no* inicio;
     int h;
     printf("\n");
-    printf("Qual árvore você deseja acessar? \n\n 1 = Árvore 1 \n 2 = Árvore 2");
-    scanf("%d", &arvore);
+    do
+    {
+        printf("Qual arvore voce deseja acessar?\n\n1 = Arvore 1\n2 = Arvore 2\n\n");
+        scanf("%d", &arvore);
+    } while (arvore != 1 && arvore != 2);
 
-
-
-   //MENU
+   //menu
     do
     {
         printf("\n");
-        choice=Menu();
-        switch (choice)
+        choice = menu();
+        switch(choice)
         {
            case 1:
                 do{
-                printf("Digite o numero para insercao:");
-                scanf("%d",&num);
-                h=0;
-                insere(&raiz, num,&h);
-                if(arvore == 2)
-                {
-                    insere(&raiz2, num, &h);
-                }
-                }while(num<0);
+                    printf("Digite o numero para insercao: ");
+                    scanf("%d",&num);
+                    h = 0;
+                    if(arvore == 2)
+                        insere(&raiz2, num, &h);
+                    else
+                        insere(&raiz, num, &h);
+                } while(num<0);
                 break;
            case 2:
-                printf("Digite o numero para remocao:");
+                printf("Digite o numero para remocao: ");
                 scanf("%d",&num);
-                deleta(&raiz, num);
                 if(arvore == 2)
-                {
                     deleta(&raiz2, num);
-                }
+                else
+                    deleta(&raiz, num);
                 break;
            case 3:
-                ordem(raiz);
                 if(arvore == 2)
-                {
                     ordem(raiz2);
-                }
+                else
+                    ordem(raiz);
                 break;
-           case 4:
-                printf("Percurso em largura : ");
-                if (raiz) largura(raiz);
+            case 4:
+                pre_ordem(raiz);
                 if(arvore == 2)
                 {
-                    if (raiz2) largura(raiz2);
+                    pre_ordem(raiz2);
                 }
-                else printf(" Arvore vazia!");
                 break;
-           case 5:
-                printf("Digite o numero para consulta:");
-                scanf("%d",&num);
-                if (consulta(raiz, num)==1) printf("Numero encontrado\n");
-                else printf("Numero NAO encontrado\n");
+            case 5:
+                pos_ordem(raiz);
                 if(arvore == 2)
                 {
-                if (consulta(raiz2, num)==1) printf("Numero encontrado\n");
-                else printf("Numero NAO encontrado\n");
+                    pos_ordem(raiz2);
+                }
+                break;
+           case 6:
+                if(arvore == 2)
+                    largura(raiz2);
+                else
+                    largura(raiz);
+                break;
+            case 7:
+                cont_total = contagem(raiz);
+                printf("\nNumero total de nos e de %d\n", cont_total);
+                if(arvore == 2)
+                {
+                    cont_total = contagem(raiz2);
+                    printf("\nNumero total de nos e de %d\n", cont_total);
+                }
+                break;
+            case 8:
+                folhas = cont_folhas(raiz);
+                printf("\nNumero de nos folhas e %d\n", folhas);
+                if(arvore == 2)
+                {
+                    folhas = cont_folhas(raiz2);
+                    printf("\nNumero de nos folhas e %d\n", folhas);
+                }
+                break;
+            case 9:
+                filhos=um_filho(raiz);
+                printf("Numero de nos com 1 filho %d\n", filhos);
+                if(arvore == 2)
+                {
+                    filhos=um_filho(raiz2);
+                    printf("Numero de nos com 1 filho %d\n", filhos);
                 }
                 break;
             case 10:
+                filhos = dois_filhos(raiz);
+                printf("Numero de nos com 2 filhos %d\n", filhos);
+                if(arvore == 2)
+                {
+                    filhos = dois_filhos(raiz2);
+                    printf("Numero de nos com 2 filhos %d\n", filhos);
+                }
+                break;
+            case 11:
+                //printf("Altura da arvore: %d", altura(raiz));
+                break;
+            case 12:
                 media(raiz, &med);
-                if(arvore==2)
+                if(arvore == 2)
                 {
                     media(raiz2, &med);
                 }
-                printf("\n A média é %d \n", med);
+                printf("\nA media e %d\n", med);
                 break;
-            case 11:
-                cont_total = contagem(raiz);
-                printf("\n Número total de nós é de %d \n", cont_total);
-                if(arvore==2)
+            case 13:
+                menor_valor(raiz);
+                if(arvore == 2)
                 {
-                    cont_total = contagem(raiz2);
-                    printf("\n Número total de nós é de %d \n", cont_total);
+                    menor_valor(raiz2);
                 }
                 break;
-            case 12:
+            case 14:
+                maior_valor(raiz);
+                if(arvore == 2)
+                {
+                    maior_valor(raiz2);
+                }
+                break;
+            case 15:
+                same = iguais(raiz, raiz2);
+                if(same = 1)
+                {
+                    printf("As Arvores sao iguais");
+                }
+                else
+                {
+                    printf("As Arvores sao diferentes");
+                }
+                break;
+            case 18:
                 printf("\nQual valor deseja buscar?\n");
-                scanf("%d", busca);
+                scanf("%d", &busca);
                 pertence(raiz, busca);
-                if(arvore ==2)
+                if(arvore == 2)
                 {
                     printf("\nQual valor deseja buscar?\n");
                     scanf("%d", busca);
                     pertence(raiz2, busca);
                 }
                 break;
-            case 13:
-                folhas = cont_folhas(raiz);
-                printf("\n Número de nós folhas é %d \n", folhas);
-                if(arvore==2)
-                {
-                    folhas = cont_folhas(raiz2);
-                    printf("\n Número de nós folhas é %d \n", folhas);
-                }
+            default:
                 break;
-            case 14:
-                same = iguais(raiz, raiz2);
-                if(same=1)
-                {
-                    printf("As Árvores são iguais");
-                }
-                else
-                {
-                    printf("As Árvores são diferentes");
-                }
-                break;
-            case 15:
-                pre_ordem(raiz);
-                if(arvore==2)
-                {
-                    pre_ordem(raiz2);
-                }
-                break;
-            case 16:
-                pos_ordem(raiz);
-                if(arvore==2)
-                {
-                    pos_ordem(raiz2);
-                }
-                break;
-            case 17:
-                filhos=um_filho(raiz);
-                printf("Número de nós com 1 filho %d\n", filhos);
-                if(arvore==2)
-                {
-                    filhos=um_filho(raiz2);
-                    printf("Número de nós com 1 filho %d\n", filhos);
-                }
-                break;
-            case 18:
-                filhos=dois_filhos(raiz);
-                printf("Número de nós com 2 filhos %d\n", filhos);
-                if(arvore==2)
-                {
-                    filhos=dois_filhos(raiz2);
-                    printf("Número de nós com 2 filhos %d\n", filhos);
-                }
-                break;
-            case 19:
-                menor_valor(raiz);
-                if(arvore==2)
-                {
-                    menor_valor(raiz2);
-                }
-                break;
-            case 20:
-                maior_valor(raiz);
-                if(arvore==2)
-                {
-                    maior_valor(raiz2);
-                }
-                break;
-          return 0;
           }
     } while (choice != 0);
 }
-int Menu(void)
+
+int menu(void)
 {
     int choice;
-    printf("\n\n OPCOES \n\n");
-    printf("1- Inserir\n");
-    printf("2- Remover\n");
-    printf("3- Percorrer em ordem\n");
-    printf("4- Percorrer em largura\n");
-    printf("5- Consulta\n");
-    printf("6- Similares\n");
-    printf("9- TESTE\n");
-    printf("10- Média\n");
-    printf("11- Contagem de Nós totais \n");
-    printf("12- Verificar se valor pertence a árvore\n");
-    printf("13- Contar nós folhas\n");
-    printf("14- Verificar se as duas árvores são iguais\n");
-    printf("15- Percorrer em pré ordem\n");
-    printf("16- Percorrer em pós ordem\n");
-    printf("17- Contar nós com 1 filho\n");
-    printf("18- Contar nós com 2 filhos\n");
-    printf("19- Verificar o Menor Valor na Árvore\n");
-    printf("20- Verificar o Maior Valor na Árvore\n");
-    printf("0- Sair\n");
+    printf("\n\nOPCOES\n\n");
+    printf("1 - Inserir\n");
+    printf("2 - Remover\n");
+    printf("3 - Percorrer em ordem\n");
+    printf("4 - Percorrer em pre ordem\n");
+    printf("5 - Percorrer em pos ordem\n");
+    printf("6 - Percorrer em largura\n");
+    printf("7 - Contagem de nos totais \n");
+    printf("8 - Contar nos folhas\n");
+    printf("9 - Contar nos com 1 filho\n");
+    printf("10 - Contar nos com 2 filhos\n");
+    printf("11 - Verificar altura\n");
+    printf("12 - Media dos valores\n");
+    printf("13 - Verificar o menor valor na arvore\n");
+    printf("14 - Verificar o maior valor na arvore\n");
+    printf("15 - Verificar se as duas arvores sao iguais\n");
+    printf("16 - Verificar se as duas arvores sao semelhantes\n");
+    printf("17 - Verificar se as duas arvores sao simetricas\n");
+    printf("18 - Verificar se valor pertence a alguma ou as duas arvores\n");
+    printf("19 - Verificar quais valores pertencem as duas arvores\n");
+    printf("20 - Verificar quais valores pertencem a pelo menos uma arvore\n");
+    printf("0 - Sair\n");
     scanf("%d", &choice);
+    system("cls");
     return(choice);
 }
 
@@ -237,199 +232,219 @@ void insere(no **raiz, int n, int *h)
     no *p1 = (no*)malloc(sizeof(no));
     no *p2 = (no*)malloc(sizeof(no));
 
-        if ((*raiz) == NULL)
+    if ((*raiz) == NULL)
+    {
+        (*raiz) = (no*)malloc(sizeof(no));
+        *h = 1;
+        (*raiz)->chave = n;
+        (*raiz)->esq = (*raiz)->dir = NULL;
+        (*raiz)->bal = C;
+    }
+    else if (n < (*raiz)->chave)
+    {
+        insere (&(*raiz)->esq,n,h);
+        if (*h)
         {
-            (*raiz) = (no*) malloc(sizeof(no));
-            *h=1;
-            (*raiz) -> chave = n;
-            (*raiz) -> esq = (*raiz) -> dir = NULL;
-            (*raiz) -> bal=C;
+            switch ((*raiz)->bal)
+            {
+                case D:
+                    (*raiz)->bal = C;
+                    *h = 0;
+                    break;
+                case C:
+                    (*raiz)->bal = E;
+                    break;
+                case E:
+                    p1 = (*raiz)->esq;
+                    if ((p1->bal) == E)
+                    { // rebalanceamento simples
+                        (*raiz)->esq = p1->dir;
+                        p1->dir = (*raiz);
+                        (*raiz)->bal= C;
+                        (*raiz) = p1;
+                    }
+                    else
+                    { //rebalanceamento duplo
+                        p2 = p1->dir;
+                        p1->dir = p2->esq;
+                        p2->esq = p1;
+                        (*raiz)->esq = p2->dir;
+                        p2->dir = (*raiz);
+                        //printf("P1, bal : %d  %d\n", p1->chave, p1->bal);
+                        //printf("P2, bal : %d  %d\n", p2->chave, p2->bal);
+                        //printf("Raiz, bal : %d  %d\n", (*raiz)->chave, (*raiz)->bal); getchar();
+                        if (p2->bal == E)
+                            (*raiz)->bal = D;
+                        else
+                            (*raiz)->bal = C;
+                        if (p2->bal == D)
+                            p1->bal = E;
+                        else p1->bal = C;
+                            (*raiz) = p2;
+                    }
+                    (*raiz)->bal = C;
+                    *h=0;
+                    break;
+            }
         }
-        else
-            if (n < (*raiz)->chave)
+    }
+    else if (n > (*raiz)->chave)
+    {
+        insere (&(*raiz)->dir,n,h);
+        if (*h)
+        {
+            switch ((*raiz)->bal)
             {
-                insere (&(*raiz)->esq,n,h);
-                if (*h)
-                {
-                    switch ((*raiz)->bal)
-                    {
-                        case D:
+                case E:
+                    (*raiz)->bal = C;
+                    *h = 0;
+                    break;
+                case C:
+                    (*raiz)->bal = D;
+                    break;
+                case D:
+                    p1 = (*raiz)->dir;
+                    if (p1->bal == D)
+                    { // rebalanceamento simples
+                        (*raiz)->dir = p1->esq;
+                        p1->esq = (*raiz);
                         (*raiz)->bal = C;
-                        *h=0;
-                        break;
-
-                        case C:
-                        (*raiz)->bal = E;
-                        break;
-
-                        case E:
-                        p1= (*raiz) -> esq;
-                        if ((p1->bal) == E)
-                        { // rebalanceamento simples
-                            (*raiz) -> esq = p1->dir;
-                            p1->dir = (*raiz);
-                            (*raiz)->bal= C;
-                            (*raiz) = p1;
-                        }
-                        else
-                        { //rebalanceamento duplo
-                            p2 = p1->dir;
-                            p1->dir = p2->esq;
-                            p2->esq = p1;
-                            (*raiz)->esq=p2->dir;
-                            p2->dir=(*raiz);
-                            //printf("P1, bal : %d  %d\n", p1->chave, p1->bal);
-                            //printf("P2, bal : %d  %d\n", p2->chave, p2->bal);
-                            //printf("Raiz, bal : %d  %d\n", (*raiz)->chave, (*raiz)->bal); getchar();
-                            if (p2->bal==E) (*raiz)->bal = D;
-                            else (*raiz)->bal = C;
-                            if (p2->bal==D) p1->bal = E;
-                            else p1->bal = C;
-                            (*raiz) = p2;
-                        }
-                        (*raiz)->bal = C;
-                        *h=0;
-                        break;
+                        (*raiz) = p1;
                     }
-                }
-            }
-            else
-            if (n > (*raiz)->chave)
-            {
-                insere (&(*raiz)->dir,n,h);
-                if (*h)
-                {
-                    switch ((*raiz)->bal)
-                    {
-                        case E:
-                        (*raiz)->bal = C;
-                        *h=0;
-                        break;
-
-                        case C:
-                        (*raiz)->bal = D;
-                        break;
-
-                        case D:
-                        p1= (*raiz) -> dir;
-                        if (p1->bal == D)
-                        { // rebalanceamento simples
-                            (*raiz) -> dir = p1->esq;
-                            p1->esq = (*raiz);
-                            (*raiz)->bal= C;
-                            (*raiz) = p1;
-                        }
-                        else
-                        { //rebalanceamento duplo
-                            p2 = p1->esq;
-                            p1->esq = p2->dir;
-                            p2->dir = p1;
-                            (*raiz)->dir=p2->esq;
-                            p2->esq=(*raiz);
-                            if (p2->bal==D) (*raiz)->bal = E;
-                            else (*raiz)->bal = C;
-                            if (p2->bal==E) p1->bal = D;
-                            else p1->bal = C;
-                            (*raiz) = p2;
-                        }
-                        (*raiz)->bal = C;
-                        *h=0;
-                        break;
+                    else
+                    { //rebalanceamento duplo
+                        p2 = p1->esq;
+                        p1->esq = p2->dir;
+                        p2->dir = p1;
+                        (*raiz)->dir=p2->esq;
+                        p2->esq=(*raiz);
+                        if (p2->bal==D) (*raiz)->bal = E;
+                        else (*raiz)->bal = C;
+                        if (p2->bal==E) p1->bal = D;
+                        else p1->bal = C;
+                        (*raiz) = p2;
                     }
-                }
+                    (*raiz)->bal = C;
+                    *h = 0;
+                    break;
             }
+        }
+    }
 }
 /* REMOCAO DE ELEMENTO DA ARVORE */
 
 int mydel(no **x)
-   {
-        if ((*x)->dir != NULL) return(mydel (&(*x)->dir));
-        else
-        {
-            int n=(*x)->chave;
-            (*x)=(*x)->esq;
-            return(n);
-        }
-   }
+{
+    if ((*x)->dir != NULL) return(mydel(&(*x)->dir));
+    else
+    {
+        int n = (*x)->chave;
+        (*x) = (*x)->esq;
+        return(n);
+    }
+}
 
 void deleta(no **raiz, int n)
 {
     if (*raiz != NULL)
     {
+        if (!consulta(*raiz, n))
+        {
+            printf("Elemento nao encontrado");
+            return;
+        }
         if ((*raiz)->chave == n)
         {
-            if ((*raiz)->esq==NULL) (*raiz)=(*raiz)->dir;
-            else if ((*raiz)->dir==NULL) (*raiz)=((*raiz)->esq);
-            else (*raiz)->chave= mydel(&(*raiz)->esq);
+            if ((*raiz)->esq == NULL)
+                (*raiz) = (*raiz)->dir;
+            else if ((*raiz)->dir == NULL)
+                (*raiz) = ((*raiz)->esq);
+            else
+                (*raiz)->chave = mydel(&(*raiz)->esq);
         }
-        else if (n > (*raiz)->chave) deleta((*raiz)->dir, n);
-        else if (n < (*raiz)->chave) deleta((*raiz)->esq, n);
+        else if (n > (*raiz)->chave)
+            deleta(&(*raiz)->dir, n);
+        else if (n < (*raiz)->chave)
+            deleta(&(*raiz)->esq, n);
+    }
+    else
+    {
+        printf("Arvore vazia");
     }
 }
 
 /* FILA */
 
-   void enqueue(no *raiz, no_fila **fila)
-   {
-        if (*fila==NULL){
-                        *fila=(no_fila*) malloc(sizeof(no_fila));
-                        (*fila)->registro = raiz;
-                        (*fila)->prox = NULL;
-                        } else {
-                               no_fila *aux;
-                               aux = *fila;
-                               while ((aux)->prox != NULL)
-                                     (aux) = (aux)->prox;
-                               aux->prox = (no_fila*) malloc(sizeof(no_fila));
-                               aux = aux->prox;
-                               aux->registro = raiz;
-                               aux->prox = NULL;
-                               }
-   }
-   no_fila *dequeue(no_fila **fila)
-   {
-           if (*fila!=NULL) {
-                 no_fila *aux;
-                 aux = *fila;
-                 if (aux->prox==NULL) {
-                                      *fila=NULL;
-                                      return(aux);
-                                      }
-                                      else {
-                                           aux=*fila;
-                                           *fila=(*fila)->prox;
-                                           return(aux);
-                                           }
-                 }
-   }
+void enqueue(no *raiz, no_fila **fila)
+{
+    if (*fila==NULL){
+        *fila=(no_fila*) malloc(sizeof(no_fila));
+        (*fila)->registro = raiz;
+        (*fila)->prox = NULL;
+    } else {
+        no_fila *aux;
+        aux = *fila;
+        while ((aux)->prox != NULL)
+        {
+            (aux) = (aux)->prox;
+        }
+        aux->prox = (no_fila*) malloc(sizeof(no_fila));
+        aux = aux->prox;
+        aux->registro = raiz;
+        aux->prox = NULL;
+    }
+}
+
+no_fila *dequeue(no_fila **fila)
+{
+    if (*fila != NULL) {
+        no_fila *aux;
+        aux = *fila;
+        if (aux->prox == NULL) {
+            *fila = NULL;
+            return(aux);
+        }
+        else {
+            aux = *fila;
+            *fila = (*fila)->prox;
+            return(aux);
+        }
+    }
+}
 
 
 /* PERCURSO EM LARGURA */
 
 void largura (no *raiz)
 {
-     no_fila *fila = NULL;
-     no_fila *aux = NULL;
+    no_fila *fila = NULL;
+    no_fila *aux = NULL;
 
-     enqueue (raiz, &fila);
-     while (fila) {
-           aux=dequeue(&fila);
-           printf("%d ( %d )  ", aux->registro->chave, aux->registro->bal);
-           if (aux->registro->esq) enqueue (aux->registro->esq, &fila);
-           if (aux->registro->dir) enqueue (aux->registro->dir, &fila);
-           }
-     printf("\n");
+    enqueue (raiz, &fila);
+    while (fila) {
+        aux = dequeue(&fila);
+        // printf("%d (%d)", aux->registro->chave, aux->registro->bal);
+        // if (aux->registro->esq)
+        //     enqueue (aux->registro->esq, &fila);
+        // if (aux->registro->dir)
+        //     enqueue (aux->registro->dir, &fila);
+    }
+    printf("\n");
 }
 
 
 /* CONSULTA */
 
-int consulta( no* raiz, int n)
+int consulta(no *raiz, int n)
 {
-    if (raiz==NULL) return (0);
-    else if (raiz->chave == n) return (1);
-    else if (n< raiz->chave) return(consulta (raiz->esq,n));
-    else return(consulta (raiz->dir,n));
+    if (raiz == NULL)
+        return (0);
+    else if (raiz->chave == n)
+        return (1);
+    else if (n < raiz->chave)
+        return(consulta(raiz->esq, n));
+    else
+        return(consulta(raiz->dir, n));
 }
 
 /* MEDIA */
@@ -438,45 +453,45 @@ int media(no *raiz, int *med)
 {
     if(raiz == NULL)
     {
-        printf(" \n\nÁrvore Vazia! \n");
+        printf("\n\nArvore Vazia!\n");
     }
-    else if(raiz->dir==NULL)
+    else if(raiz->dir == NULL)
     {
         *med += raiz->chave;
-        media(raiz->esq,*med);
+        media(raiz->esq, *med);
     }
-    else if(raiz->esq==NULL)
+    else if(raiz->esq == NULL)
     {
-        *med+= raiz->chave;
-        media(raiz->dir,*med);
+        *med += raiz->chave;
+        media(raiz->dir, *med);
     }
     *med += raiz->chave;
-    return(media(raiz->dir,*med) + media(raiz->esq,*med));
+    return(media(raiz->dir, *med) + media(raiz->esq, *med));
 }
 
-// NUMERO DE NÓS
+// NUMERO DE NoS
 
-int contagem (no *raiz)
+int contagem(no *raiz)
 {
-    if(raiz==NULL)
+    if(raiz == NULL)
     {
-        return (0);
+        return(0);
     }
     return(1 + contagem(raiz->esq) + contagem(raiz->dir));
 }
 
-// SE VALOR ESTÁ CONTIDO NA ÁRVORES
+// SE VALOR ESTA CONTIDO NA ARVORES
 
 void pertence(no *raiz, int busca)
 {
-    if(raiz==NULL)
+    if(raiz == NULL)
     {
-        printf("Valor não encontrado \n");
+        printf("Valor nao encontrado\n");
         return;
     }
     if(raiz->chave == busca)
     {
-        printf("Valor Pertence \n");
+        printf("Valor Pertence\n");
     }
     if(busca < raiz->chave)
     {
@@ -485,32 +500,32 @@ void pertence(no *raiz, int busca)
     return(pertence(raiz->dir, busca));
 }
 
-// NÚMERO DE FOLHAS
+// NuMERO DE FOLHAS
 
 int cont_folhas(no *raiz)
 {
-    if(raiz==NULL)
+    if(raiz == NULL)
     {
         return(0);
     }
-    if((raiz->esq==NULL) && (raiz->dir==NULL))
+    if((raiz->esq == NULL) && (raiz->dir == NULL))
     {
         return(1);
     }
     return(cont_folhas(raiz->esq) + cont_folhas(raiz->dir));
 }
 
-// ÁRVORES IGUAIS
+// ARVORES IGUAIS
 
 int iguais (no* raiz, no *raiz2)
 {
-    if((raiz==NULL) && (raiz2==NULL))
+    if((raiz == NULL) && (raiz2 == NULL))
     {
-        return (1);
+        return(1);
     }
-    if((raiz==NULL) || (raiz2==NULL))
+    if((raiz == NULL) || (raiz2 == NULL))
     {
-        return (0);
+        return(0);
     }
     if(raiz->chave != raiz2->chave)
     {
@@ -521,65 +536,67 @@ int iguais (no* raiz, no *raiz2)
 
 // PERCURSO EM ORDEM
 
-void ordem (no *raiz)
+void ordem(no *raiz)
 {
     if(raiz != NULL)
     {
-        ordem(raiz->esq);
-        printf("%d \n", raiz->chave);
-        ordem(raiz->dir);
+        if (raiz->esq != NULL)
+            ordem(raiz->esq);
+        printf("%d\n", raiz->chave);
+        if (raiz->dir != NULL)
+            ordem(raiz->dir);
     }
     else
     {
-        printf("Árvore Vazia! \n");
+        printf("Arvore Vazia!\n");
     }
 }
 
 //PERCURSO EM PRÉ ORDEM
 
-void pre_ordem (no *raiz)
+void pre_ordem(no *raiz)
 {
     if(raiz != NULL)
     {
-        printf("%d \n", raiz->chave);
+        printf("%d\n", raiz->chave);
         pre_ordem(raiz->esq);
         pre_ordem(raiz->dir);
     }
     else
     {
-        printf("Árvore Vazia! \n");
+        printf("Arvore Vazia! \n");
     }
 }
 
-//PERCRUSO EM PÓS ORDEM
+//PERCRUSO EM PoS ORDEM
 
 void pos_ordem(no *raiz)
 {
-    if(raiz!=NULL)
+    if(raiz != NULL)
     {
         pos_ordem(raiz->esq);
         pos_ordem(raiz->dir);
-        printf("%d \n", raiz->chave);
+        printf("%d\n", raiz->chave);
     }
     else
     {
-        printf("Árvore Vazia!\n");
+        printf("Arvore Vazia!\n");
     }
 }
 
-//NÓS COM 1 FILHO
+//NoS COM 1 FILHO
 
-int um_filho (no *raiz)
+int um_filho(no *raiz)
 {
-    if(raiz==NULL)
+    if(raiz == NULL)
     {
         return(0);
     }
-    if(raiz->esq==NULL)
+    if(raiz->esq == NULL)
     {
         return(1 + um_filho(raiz->dir));
     }
-    if(raiz->dir==NULL)
+    if(raiz->dir == NULL)
     {
         return(1 + um_filho(raiz->esq));
     }
@@ -587,38 +604,36 @@ int um_filho (no *raiz)
     um_filho(raiz->dir);
 }
 
-//NÓS COM 2 FILHOS
+//NoS COM 2 FILHOS
 
 int dois_filhos(no *raiz)
 {
-    if(raiz==NULL)
+    if(raiz == NULL)
     {
         return(0);
     }
-    if(raiz->esq==NULL)
+    if(raiz->esq == NULL)
     {
-        return (dois_filhos(raiz->dir));
+        return(dois_filhos(raiz->dir));
     }
-    if(raiz->dir==NULL)
+    if(raiz->dir == NULL)
     {
         return(dois_filhos(raiz->esq));
     }
     return(1 + dois_filhos(raiz->esq) + dois_filhos(raiz->dir));
 }
 
-//MENOR VALOR NA ÁRVORE
+//MENOR VALOR NA ARVORE
 
 void menor_valor(no *raiz)
 {
-    int menor=99999;
+    int menor = 99999;
 
-    if(raiz==NULL)
-    {
+    if(raiz == NULL)
         return;
-    }
     if(raiz->chave < menor)
     {
-        menor=raiz->chave;
+        menor = raiz->chave;
         menor_valor(raiz->esq);
         menor_valor(raiz->dir);
     }
@@ -627,24 +642,22 @@ void menor_valor(no *raiz)
         menor_valor(raiz->esq);
         menor_valor(raiz->dir);
     }
-    printf(" O menor valor na árvore é: %d\n", menor);
+    printf("O menor valor na arvore e: %d\n", menor);
 }
 
-//MAIOR VALOR NA ÁRVORE
+//MAIOR VALOR NA ARVORE
 
 void maior_valor(no *raiz)
 {
     int maior = -1;
 
-    if(raiz==NULL)
-    {
+    if(raiz == NULL)
         return;
-    }
     if(raiz->chave > maior)
     {
-        maior=raiz->chave;
+        maior = raiz->chave;
         maior_valor(raiz->esq);
         maior_valor(raiz->dir);
     }
-    printf("O maior valor na árvore é: %d\n", maior);
+    printf("O maior valor na arvore e: %d\n", maior);
 }
