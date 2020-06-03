@@ -19,7 +19,7 @@ typedef struct fila no_fila;
 
 struct fila
 {
-    struct no *registro;
+           no *registro;
     struct no_fila *prox;
 };
 
@@ -44,20 +44,29 @@ int consulta( no* raiz, int n);
 int main ()
 {
     setlocale(LC_ALL, "Portuguese");
-    int choice, num, arvore, busca, folhas, same, med, cont_total, filhos;
+    int num, busca, folhas, same, cont_total, filhos;
+    int quant = 0;
+    int quant2 = 0;
+    int arvore = 1;
+    int med = 0;
     no *raiz = NULL;
     no *raiz2 = NULL;
     no* inicio;
     int h;
     printf("\n");
-    do
+    while (arvore == 1 || arvore == 2)
     {
         printf("Qual arvore voce deseja acessar?\n\n1 = Arvore 1\n2 = Arvore 2\n\n");
         scanf("%d", &arvore);
-    } while (arvore != 1 && arvore != 2);
+
+        if(arvore != 1 && arvore != 2)
+        {
+            return(0);
+        }
+        int choice = -1;
 
    //menu
-    do
+    while (choice != 0)
     {
         printf("\n");
         choice = menu();
@@ -69,18 +78,31 @@ int main ()
                     scanf("%d",&num);
                     h = 0;
                     if(arvore == 2)
+                    {
                         insere(&raiz2, num, &h);
+                        quant2++;
+                    }
                     else
+                    {
                         insere(&raiz, num, &h);
+                        quant++;
+                    }
                 } while(num<0);
+
                 break;
            case 2:
                 printf("Digite o numero para remocao: ");
                 scanf("%d",&num);
                 if(arvore == 2)
+                {
                     deleta(&raiz2, num);
+                    quant--;
+                }
                 else
+                {
                     deleta(&raiz, num);
+                    quant--;
+                }
                 break;
            case 3:
                 if(arvore == 2)
@@ -109,38 +131,50 @@ int main ()
                     largura(raiz);
                 break;
             case 7:
-                cont_total = contagem(raiz);
-                printf("\nNumero total de nos e de %d\n", cont_total);
                 if(arvore == 2)
                 {
                     cont_total = contagem(raiz2);
                     printf("\nNumero total de nos e de %d\n", cont_total);
                 }
+                else
+                {
+                    cont_total = contagem(raiz);
+                    printf("\nNumero total de nos e de %d\n", cont_total);
+                }
                 break;
             case 8:
-                folhas = cont_folhas(raiz);
-                printf("\nNumero de nos folhas e %d\n", folhas);
                 if(arvore == 2)
                 {
                     folhas = cont_folhas(raiz2);
                     printf("\nNumero de nos folhas e %d\n", folhas);
                 }
+                else
+                {
+                    folhas = cont_folhas(raiz);
+                    printf("\nNumero de nos folhas e %d\n", folhas);
+                }
                 break;
             case 9:
-                filhos=um_filho(raiz);
-                printf("Numero de nos com 1 filho %d\n", filhos);
                 if(arvore == 2)
                 {
                     filhos=um_filho(raiz2);
                     printf("Numero de nos com 1 filho %d\n", filhos);
                 }
+                else
+                {
+                    filhos=um_filho(raiz);
+                    printf("Numero de nos com 1 filho %d\n", filhos);
+                }
                 break;
             case 10:
-                filhos = dois_filhos(raiz);
-                printf("Numero de nos com 2 filhos %d\n", filhos);
                 if(arvore == 2)
                 {
                     filhos = dois_filhos(raiz2);
+                    printf("Numero de nos com 2 filhos %d\n", filhos);
+                }
+                else
+                {
+                    filhos = dois_filhos(raiz);
                     printf("Numero de nos com 2 filhos %d\n", filhos);
                 }
                 break;
@@ -148,25 +182,37 @@ int main ()
                 //printf("Altura da arvore: %d", altura(raiz));
                 break;
             case 12:
-                media(raiz, &med);
+                printf("media =%d\n", med);
+                printf("quantidade = %d\n", quant);
                 if(arvore == 2)
                 {
                     media(raiz2, &med);
                 }
+                else
+                {
+                    media(raiz, &med);
+                }
+                med=(med/quant);
                 printf("\nA media e %d\n", med);
                 break;
             case 13:
-                menor_valor(raiz);
                 if(arvore == 2)
                 {
                     menor_valor(raiz2);
                 }
+                else
+                {
+                    menor_valor(raiz);
+                }
                 break;
             case 14:
-                maior_valor(raiz);
                 if(arvore == 2)
                 {
                     maior_valor(raiz2);
+                }
+                else
+                {
+                    maior_valor(raiz);
                 }
                 break;
             case 15:
@@ -181,20 +227,24 @@ int main ()
                 }
                 break;
             case 18:
-                printf("\nQual valor deseja buscar?\n");
-                scanf("%d", &busca);
-                pertence(raiz, busca);
                 if(arvore == 2)
                 {
                     printf("\nQual valor deseja buscar?\n");
                     scanf("%d", busca);
                     pertence(raiz2, busca);
                 }
+                else
+                {
+                    printf("\nQual valor deseja buscar?\n");
+                    scanf("%d", &busca);
+                    pertence(raiz, busca);
+                }
                 break;
-            default:
+                default:
                 break;
-          }
-    } while (choice != 0);
+             }
+        }
+    }
 }
 
 int menu(void)
@@ -466,7 +516,7 @@ int media(no *raiz, int *med)
         media(raiz->dir, *med);
     }
     *med += raiz->chave;
-    return(media(raiz->dir, *med) + media(raiz->esq, *med));
+    return( *med + media(raiz->dir, *med) + media(raiz->esq, *med));
 }
 
 // NUMERO DE NoS
@@ -635,14 +685,15 @@ void menor_valor(no *raiz)
     {
         menor = raiz->chave;
         menor_valor(raiz->esq);
-        menor_valor(raiz->dir);
     }
     if(raiz->chave > menor)
     {
         menor_valor(raiz->esq);
-        menor_valor(raiz->dir);
     }
+    if(raiz->esq==NULL)
+    {
     printf("O menor valor na arvore e: %d\n", menor);
+    }
 }
 
 //MAIOR VALOR NA ARVORE
@@ -656,8 +707,10 @@ void maior_valor(no *raiz)
     if(raiz->chave > maior)
     {
         maior = raiz->chave;
-        maior_valor(raiz->esq);
         maior_valor(raiz->dir);
     }
-    printf("O maior valor na arvore e: %d\n", maior);
+    if(raiz->dir == NULL)
+    {
+        printf("O maior valor na arvore e: %d\n", maior);
+    }
 }
