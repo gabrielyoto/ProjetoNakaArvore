@@ -35,7 +35,7 @@ int iguais(no *raiz, no *raiz2);
 void ordem(no *raiz);
 void pre_ordem(no *raiz);
 void pos_ordem(no *raiz);
-int um_filho(no *raiz);
+void um_filho(no *raiz, int *nos);
 int dois_filhos(no *raiz);
 void menor_valor(no *raiz);
 void maior_valor(no *raiz);
@@ -166,13 +166,15 @@ int main ()
                 case 9:
                     if(arvore == 2)
                     {
-                        filhos = um_filho(raiz2);
-                        printf("Numero de nos com 1 filho %d\n\n", filhos);
+                        int nos = 0;
+                        um_filho(raiz2, &nos);
+                        printf("Numero de nos com 1 filho: %d\n\n", nos);
                     }
                     else
                     {
-                        filhos = um_filho(raiz);
-                        printf("Numero de nos com 1 filho %d\n\n", filhos);
+                        int nos = 0;
+                        um_filho(raiz, &nos);
+                        printf("Numero de nos com 1 filho: %d\n\n", nos);
                     }
                     system("pause");
                     system("cls");
@@ -181,12 +183,12 @@ int main ()
                     if(arvore == 2)
                     {
                         filhos = dois_filhos(raiz2);
-                        printf("Numero de nos com 2 filhos %d\n\n", filhos);
+                        printf("Numero de nos com 2 filhos: %d\n\n", filhos);
                     }
                     else
                     {
                         filhos = dois_filhos(raiz);
-                        printf("Numero de nos com 2 filhos %d\n\n", filhos);
+                        printf("Numero de nos com 2 filhos: %d\n\n", filhos);
                     }
                     system("pause");
                     system("cls");
@@ -218,13 +220,9 @@ int main ()
                     break;
                 case 14:
                     if(arvore == 2)
-                    {
                         maior_valor(raiz2);
-                    }
                     else
-                    {
                         maior_valor(raiz);
-                    }
                     printf("\n");
                     system("pause");
                     system("cls");
@@ -239,7 +237,7 @@ int main ()
                     break;
                 case 18:
                     printf("\nQual valor deseja buscar?\n");
-                    scanf("%d", busca);
+                    scanf("%d", &busca);
                     if(arvore == 2)
                         pertence(raiz2, busca);
                     else
@@ -656,22 +654,22 @@ void pos_ordem(no *raiz)
 
 //NoS COM 1 FILHO
 
-int um_filho(no *raiz)
+void um_filho(no *raiz, int *nos)
 {
     if(raiz == NULL)
+        return;
+    if(raiz->esq != NULL && raiz->dir == NULL)
     {
-        return(0);
+        (*nos)++;
+        um_filho(raiz->esq, nos);
     }
-    if(raiz->esq == NULL)
+    if(raiz->dir != NULL && raiz->esq == NULL)
     {
-        return(1 + um_filho(raiz->dir));
+        (*nos)++;
+        um_filho(raiz->dir, nos);
     }
-    if(raiz->dir == NULL)
-    {
-        return(1 + um_filho(raiz->esq));
-    }
-    um_filho(raiz->esq);
-    um_filho(raiz->dir);
+    um_filho(raiz->esq, nos);
+    um_filho(raiz->dir, nos);
 }
 
 //NoS COM 2 FILHOS
