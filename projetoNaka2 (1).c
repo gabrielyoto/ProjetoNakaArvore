@@ -26,7 +26,7 @@ struct fila
 void insere(no **raiz, int n, int *h);
 void deleta(no **raiz, int n);
 int menu(void);
-int media(no *raiz, int *med);
+void media(no *raiz, int *med);
 void largura (no *raiz);
 int contagem (no *raiz);
 void pertence (no *raiz, int busca);
@@ -45,10 +45,7 @@ int main ()
 {
     setlocale(LC_ALL, "Portuguese");
     int num, busca, folhas, same, cont_total, filhos;
-    int quant = 0;
-    int quant2 = 0;
     int arvore = 1;
-    int med = 0;
     no *raiz = NULL;
     no *raiz2 = NULL;
     no* inicio;
@@ -77,19 +74,18 @@ int main ()
             switch(choice)
             {
                 case 1:
-                    do{
+                    do {
                         printf("Digite o numero para insercao: ");
                         scanf("%d",&num);
                         h = 0;
-                        if(arvore == 2)
-                        {
-                            insere(&raiz2, num, &h);
-                            quant2++;
-                        }
+                        if (num < 0)
+                            printf("Digite um numero inteiro positivo!\n");
                         else
                         {
-                            insere(&raiz, num, &h);
-                            quant++;
+                            if (arvore == 2)
+                                insere(&raiz2, num, &h);
+                            else
+                                insere(&raiz, num, &h);
                         }
                     } while(num < 0);
                     break;
@@ -97,15 +93,9 @@ int main ()
                     printf("Digite o numero para remocao: ");
                     scanf("%d",&num);
                     if(arvore == 2)
-                    {
                         deleta(&raiz2, num);
-                        quant--;
-                    }
                     else
-                    {
                         deleta(&raiz, num);
-                        quant--;
-                    }
                     system("pause");
                     system("cls");
                     break;
@@ -206,15 +196,14 @@ int main ()
                     system("pause");
                     system("cls");
                     break;
-                case 12:
-                    // printf("media =%d\n", med);
-                    // printf("quantidade = %d\n", quant);
+                case 12: ;
+                    int med = 0;
                     if(arvore == 2)
                         media(raiz2, &med);
                     else
                         media(raiz, &med);
-                    med = (med / quant);
-                    printf("\nA media e %d\n\n", med);
+                    float media = ((float)med / (float)contagem(raiz));
+                    printf("\nA media e %.2f\n\n", media);
                     system("pause");
                     system("cls");
                     break;
@@ -529,24 +518,21 @@ int consulta(no *raiz, int n)
 
 /* MEDIA */
 
-int media(no *raiz, int *med)
+void media(no *raiz, int *med)
 {
     if(raiz == NULL)
     {
         printf("\n\nArvore Vazia!\n");
+        return;
     }
-    else if(raiz->dir == NULL)
+    else
     {
         *med += raiz->chave;
-        media(raiz->esq, *med);
+        if (raiz->esq != NULL)
+            media(raiz->esq, med);
+        if (raiz->dir != NULL)
+            media(raiz->dir, med);
     }
-    else if(raiz->esq == NULL)
-    {
-        *med += raiz->chave;
-        media(raiz->dir, *med);
-    }
-    *med += raiz->chave;
-    return(*med + media(raiz->dir, *med) + media(raiz->esq, *med));
 }
 
 // NUMERO DE NoS
