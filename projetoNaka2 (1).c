@@ -625,8 +625,10 @@ void pre_ordem(no *raiz)
     if(raiz != NULL)
     {
         printf("%d\n", raiz->chave);
-        pre_ordem(raiz->esq);
-        pre_ordem(raiz->dir);
+        if (raiz->esq != NULL)
+            pre_ordem(raiz->esq);
+        if (raiz->dir != NULL)
+            pre_ordem(raiz->dir);
     }
     else
     {
@@ -640,8 +642,10 @@ void pos_ordem(no *raiz)
 {
     if(raiz != NULL)
     {
-        pos_ordem(raiz->esq);
-        pos_ordem(raiz->dir);
+        if (raiz->esq != NULL)
+            pos_ordem(raiz->esq);
+        if (raiz->dir != NULL)
+            pos_ordem(raiz->dir);
         printf("%d\n", raiz->chave);
     }
     else
