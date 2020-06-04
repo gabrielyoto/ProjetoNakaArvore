@@ -39,7 +39,8 @@ void um_filho(no *raiz, int *nos);
 int dois_filhos(no *raiz);
 void menor_valor(no *raiz);
 void maior_valor(no *raiz);
-int consulta( no* raiz, int n);
+int consulta(no* raiz, int n);
+int altura(no* raiz);
 
 int main ()
 {
@@ -168,13 +169,13 @@ int main ()
                     {
                         int nos = 0;
                         um_filho(raiz2, &nos);
-                        printf("Numero de nos com 1 filho: %d\n\n", nos);
+                        printf("\nNumero de nos com 1 filho: %d\n\n", nos);
                     }
                     else
                     {
                         int nos = 0;
                         um_filho(raiz, &nos);
-                        printf("Numero de nos com 1 filho: %d\n\n", nos);
+                        printf("\nNumero de nos com 1 filho: %d\n\n", nos);
                     }
                     system("pause");
                     system("cls");
@@ -183,18 +184,21 @@ int main ()
                     if(arvore == 2)
                     {
                         filhos = dois_filhos(raiz2);
-                        printf("Numero de nos com 2 filhos: %d\n\n", filhos);
+                        printf("\nNumero de nos com 2 filhos: %d\n\n", filhos);
                     }
                     else
                     {
                         filhos = dois_filhos(raiz);
-                        printf("Numero de nos com 2 filhos: %d\n\n", filhos);
+                        printf("\nNumero de nos com 2 filhos: %d\n\n", filhos);
                     }
                     system("pause");
                     system("cls");
                     break;
                 case 11:
-                    //printf("Altura da arvore: %d\n\n", altura(raiz));
+                    if (arvore == 1)
+                        printf("\nAltura da arvore: %d\n\n", altura(raiz));
+                    else
+                        printf("\nAltura da arvore: %d\n\n", altura(raiz2));
                     system("pause");
                     system("cls");
                     break;
@@ -499,6 +503,14 @@ void largura (no *raiz)
     printf("\n");
 }
 
+int altura(no *raiz)
+{
+    if (raiz == NULL)
+        return 0;
+    int altura_esq = altura(raiz->esq);
+    int altura_dir = altura(raiz->dir);
+    return (altura_esq > altura_dir ? altura_esq : altura_dir) + 1;
+}
 
 /* CONSULTA */
 
