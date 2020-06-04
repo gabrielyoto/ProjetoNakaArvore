@@ -239,6 +239,12 @@ int main ()
                     system("pause");
                     system("cls");
                     break;
+                case 16:
+                    //arvores semelhantes
+                    break;
+                case 17:
+                    //arvores simetricas
+                    break;
                 case 18:
                     printf("\nQual valor deseja buscar?\n");
                     scanf("%d", &busca);
@@ -251,6 +257,7 @@ int main ()
                     system("cls");
                     break;
                 default:
+                    printf("\nOpcao invalida\n\n");
                     break;
             }
         }
